@@ -33,15 +33,16 @@
             <form>
               <h1>Inicio de sesión</h1>
               <div>
-                <input type="text" class="form-control" placeholder="Username" required="" id= />
+                <input type="email" class="form-control" placeholder="Email" required="" id="emailLog" />
               </div>
               <div>
-                <input type="password" class="form-control" placeholder="Password" required="" />
+                <input type="password" class="form-control" placeholder="Password" required="" id="pass"/>
               </div>
               <div>
-                <a class="btn btn-default submit" href="index.html">Iniciar</a>
-
-                <a class="reset_pass" href="#">¿Haz perdido tu contraseña?</a>
+                <label id="errorLogin" for="" class="invisible"></label>
+              </div>
+              <div>
+                <a class="btn btn-default submit" onclick="login()">Iniciar</a>
               </div>
 
               <div class="clearfix"></div>
@@ -79,25 +80,69 @@
               <div>
                   <input type="text" class="form-control" placeholder="IP server" required="" id = "ip"/>
                </div>
+                <div>
+                  <input type="text" class="form-control" placeholder="Password Universal" required="" id="passGlobal" />
+                </div>
+                <div>
+                  <label id="errors" for="" class="invisible"></label>
+                </div>
               <div>
                 <a class="btn btn-default submit" onclick = "post()">Submit</a>
                 <script>
                 function post(){
-                  var xhr = new XMLHttpRequest();
-                  var url = "http//:192.168.1.240/users"
+                 var url = "http://localhost:3000/users"
+
+                 var data = {}
+                 data.name = document.getElementById("username").value;
+                 data.email = document.getElementById("email").value;
+                 data.password = document.getElementById("password").value;
+                 data.ipServer = document.getElementById("ip").value;
+                 data.passGlobal = document.getElementById("passGlobal").value
+                console.log(data)
+                 var json = JSON.stringify(data);
+                 
+                 var xhr = new XMLHttpRequest();
                   xhr.open("POST", url, true);
-                  xhr.setRequestHeader("Content-Type", "application/json");
-                  xhr.onreadystatechange = function () {
-                  if (xhr.readyState === 4 && xhr.status === 200) {
-                      var json = JSON.parse(xhr.responseText);
-                      console.log(json.email + ", " + json.password);
+                  xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+                  xhr.onload = function () {
+                    var users = JSON.parse(xhr.responseText);
+                    if (xhr.readyState == 4 && xhr.status == "201") {
+                      console.table(users);
+                       document.getElementById("errors").className = "invisible"
+                    } else {
+                      document.getElementById("errors").innerHTML = 'Datos erróneos o usados anteriormente';
+                       document.getElementById("errors").className = "visible"
                     }
-                  };
-                  var data = JSON.stringify({"username": document.getElementById("username"), "email": document.getElementById("email"), "password": document.getElementById("password"), "ipServer": document.getElementById("ip")});
-                  xhr.send(data);
-                }
-                
-                
+                  }
+                  xhr.send(json)
+                 }
+
+                 function login() {
+                   var url = "http://localhost:3000/login"
+
+                   var data = {}
+                   data.email = document.getElementById("emailLog").value;
+                   data.password = document.getElementById("pass").value;
+                   console.log(data)
+                   var json = JSON.stringify(data);
+
+                   var xhr = new XMLHttpRequest();
+                   xhr.open("POST", url, true);
+                   xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+                   xhr.onload = function () {
+                     var users = JSON.parse(xhr.responseText);
+                     if (users.length === 1) {
+                       console.table(users);
+                       document.getElementById("errorLogin").className = "invisible"
+                       location.href = "./index.html"
+                     } else {
+                       console.error(users);
+                       document.getElementById("errorLogin").innerHTML = 'Datos incorrectos';
+                       document.getElementById("errorLogin").className = "visible"
+                     }
+                   }
+                    xhr.send(json)
+                 }
                 </script>
               </div>
 
@@ -111,10 +156,10 @@
                 <div class="clearfix"></div>
                 <br />
 
-                <div>
+                <!-- <div>
                   <h1><i class="fa fa-paw"></i> Gentelella Alela!</h1>
                   <p>©2016 All Rights Reserved. Gentelella Alela! is a Bootstrap 3 template. Privacy and Terms</p>
-                </div>
+                </div> -->
               </div>
             </form>
           </section>
