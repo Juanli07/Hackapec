@@ -228,20 +228,27 @@
           
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count text-center" style="padding: 0px">
               <div>
-              <button onclick="sendSignal()" type="button" class="btn btn-success" style="margin-top: 15px">ON</button>
+              <button onclick="sendSignal('foco')" type="button" id="foco" class="btn btn-success" style="margin-top: 15px">ON</button>
               </div>
             </div>
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count text-center">
               <div>
-              <button onclick="sendSignal()" type="button" class="btn btn-warning" style="margin-top: 15px">OF</button>
+              <button onclick="sendSignal('alarma')" type="button" class="btn btn-success" id="alarma" style="margin-top: 15px">ON</button>
               </div>
             </div>
           </div>
           <script>
-            function sendSignal(){
-              var url = "http://localhost:3000/users"
-              var data = {}
-              data.disp = 
+            function sendSignal(disp){
+              var url = "http://localhost:3000/dispositives";
+              var data = {};
+              var states  = document.getElementById(disp);
+              console.log(states.innerHTML)
+              if(states.innerHTML == 'ON'){
+                states.innerHTML = 'OFF';
+              }else{
+                states.innerHTML = 'ON';
+              }
+              data.dispositivo = disp;
               console.log(data)
               var json = JSON.stringify(data);
 
