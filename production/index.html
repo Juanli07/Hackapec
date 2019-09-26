@@ -202,13 +202,7 @@
               </div>
               
               <script>
-                var socket = io('http://192.168.1.235:5000');
-                  socket.on('connect', function () {
-                    socket.on('message', function (msg) {
-                      msg = 0;
-                      
-                    });
-                  });
+                
                   function update(){
                   document.getElementById('temp').innerHTML = 255;
                   }
@@ -221,17 +215,25 @@
               <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i> </i> Hace unos minutos</span>
             </div>
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
-              <span class="count_top"><i class="fa fa-user"></i> Estado de los sensores</span>
-              <div class="count green">100%</div>
-              <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i> </i> Hace unos minutos</span>
+              <span class="count_top"><i class="fa fa-user" id="pear"></i> </span>
+              <div class="count green"></div>
+              <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i> </i> Lectura sensor de movimiento</span>
             </div>
+
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+                <span class="count_top"><i class="fa fa-user" id="air"></i> </span>
+                <div class="count green"></div>
+                <span class="count_bottom"><i class="green"><i class="fa fa-sort-asc"></i> </i> Lectura sensor de aire</span>
+              </div>
           
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count text-center" style="padding: 0px">
+                <label>Foco </label>
               <div>
               <button onclick="sendSignal('foco')" type="button" id="foco" class="btn btn-success" style="margin-top: 15px">ON</button>
               </div>
             </div>
             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count text-center">
+                <label>Alarma</label>
               <div>
               <button onclick="sendSignal('alarma')" type="button" class="btn btn-success" id="alarma" style="margin-top: 15px">ON</button>
               </div>
@@ -284,8 +286,7 @@
                 <div class="col-md-9 col-sm-9 col-xs-12">
                     <canvas id="myChart" width="1500px" height="600px"></canvas>
                     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"
-                    integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
+                    <script src="http://192.168.1.235:5000/node_modules/socket.io/lib/socket.js"></script>
                   <script>
                       let temperatura = [30, 28, 40, 34]
                       let humedad = [20, 15, 17, 3]
@@ -331,18 +332,22 @@
                               }
                           }
                       });
-                      const server = io('http://localhost:5000')
+                      const server = io('http://192.168.1.235:5000')
                           server.on('connect', function () {
                               console.log('Connected')
                               server.emit('Client connected');
                           });
                           server.on('MESSAGE', function (data) {
-                              if(typeof(data) === 'number'){
-                                  valores.push(data)
-                                  valores.shift()
-                                  myChart.update()
-                              }
-                              console.log(data)
+                            let message = e.data
+                            console.log(message)
+                            text = message.split('#')
+                            temperatura.push(text[1])
+                            temperatura.shift()
+                            humedad.push(text[2])
+                            humedad.shift()
+                            myChart.update()
+                            document.getElementById('pear').innerHTML = text[3];
+                            document.getElementById('air').innerHTML = text[4];
                           });
                   </script>
                 </div>
